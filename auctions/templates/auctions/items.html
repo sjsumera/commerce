@@ -1,0 +1,20 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+<h2>Listing Page</h2>
+    {{ item.title }}
+    {{ item.description }}
+    {{ item.category }}
+    {{ item.selling_user }}
+    {% if item.image_url %}
+        <img src="{{item.image_url}}" alt="image of {{ item.title }}">
+    {% endif %}
+    placeholder for price
+
+    {% if user.is_authenticated %}
+         <button> Placeholder for bid</button>
+        Placeholder for Add to watchlist
+    {% endif %}
+
+{% endblock %}
