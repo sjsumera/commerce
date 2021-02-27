@@ -4,9 +4,22 @@
     <h2>Active Listings</h2>
 
     {% for listing in listings %}
-        <h3>{{listing.title}}</h3>
-        Description: <p>{{listing.description}}</p>
-        Category: <p>{{listing.category}}</p>
+        <div class="card text-center">
+            <div class="card-header">
+                {{listing.category}}
+            </div>
+            <div class="card-body">
+            <h5 class="card-title">{{listing.title}}</h5>
+            <p class="card-text">{{listing.description}}</p>
+            {% if listing.image_url %}
+                <p><img src="{{ listing.image_url }}" alt="Photo of {{listing.title}}"></p>
+            {% endif %}
+            <a href="{% url 'item' listing.id %}" class="btn btn-primary">View Listing</a>
+            </div>
+            <div class="card-footer text-muted">
+            Current Price
+            </div>
+        </div>
         <br>
     {%endfor%}
 

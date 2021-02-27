@@ -67,12 +67,25 @@ def register(request):
 def new_listing(request):
     """
     View to handle displaying the new listing form and process saving the form.
-    If form input is valid, process save and redirect user. 
+    If form input is valid, process save and redirect user. Citing this article for how I
+    associated the authenticated user with the form:
+    https://www.geeksforgeeks.org/associate-user-to-its-upload-post-in-django/
     """
     form = ListingForm(request.POST or None)
 
     if form.is_valid():
-        form.save()
-        return HttpResponseRedirect(reverse("index"))
+        if float(form['starting_bid'].value()) > 0:
+            object = form.save(commit=False)
+            object.selling_user = request.user
+            object.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "auctions/new_listing.html", 
+                          {"form": form, "message": "Starting bid must be greater than 0"})
 
     return render(request, "auctions/new_listing.html", {"form": form})
+
+
+def item(request, item_id):
+    item = Listing.objects.get(id=item_id)
+    return render(request, "auctions/items.html", {"item": item})
