@@ -23,4 +23,10 @@ class Bid(models.Model):
     pass
 
 class Comment(models.Model):
-    pass
+    title = models.CharField(max_length=80, blank=False)
+    comment = models.CharField(max_length=1000, blank=False)
+    post_date = models.DateTimeField(auto_now_add=True)
+    post_author = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f"{self.id}: {self.title} {self.comment} {self.post_date}"
