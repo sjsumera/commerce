@@ -9,7 +9,7 @@ from .forms import ListingForm
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {"listings": Listing.objects.all()})
 
 
 def login_view(request):
@@ -65,6 +65,10 @@ def register(request):
 
 
 def new_listing(request):
+    """
+    View to handle displaying the new listing form and process saving the form.
+    If form input is valid, process save and redirect user. 
+    """
     form = ListingForm(request.POST or None)
 
     if form.is_valid():

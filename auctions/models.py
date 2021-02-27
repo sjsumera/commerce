@@ -15,7 +15,7 @@ class Listing(models.Model):
     category = models.CharField(max_length=30, blank=True)
 
     def __str__(self):
-        return f"{self.title} {self.description} {self.starting_bid}"
+        return f"{self:id}: {self.title} {self.description} {self.starting_bid}"
 
 
 class Bid(models.Model):
