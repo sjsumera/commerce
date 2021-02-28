@@ -4,8 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Category, Listing
-from .forms import ListingForm
+from .models import User, Category, Listing, Comment
+from .forms import ListingForm, CommentForm
 
 
 def index(request):
@@ -87,5 +87,21 @@ def new_listing(request):
 
 
 def item(request, item_id):
+    """
+    View to display individual items and allow users to add comments. 
+    Citation: https://stackoverflow.com/questions/3090302/how-do-i-get-the-object-if-it-exists-or-none-if-it-does-not-exist
+    Queryset citation: https://stackoverflow.com/questions/42080864/set-in-django-for-a-queryset
+    """
     item = Listing.objects.get(id=item_id)
-    return render(request, "auctions/items.html", {"item": item})
+    comments = item.comment_set.all()
+    form = CommentForm(request.POST or None)
+
+    # add comment 
+    if form.is_valid():
+        object = form.save(commit=False)
+        object.post_author = request.user
+        object.listing = item
+        object.save()
+        form = CommentForm()
+
+    return render(request, "auctions/items.html", {"item": item, "comments": comments, "form": form})

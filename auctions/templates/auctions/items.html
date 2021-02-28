@@ -2,19 +2,48 @@
 
 {% block body %}
 
-<h2>Listing Page</h2>
-    {{ item.title }}
-    {{ item.description }}
-    {{ item.category }}
-    {{ item.selling_user }}
+    <h2>{{ item.title }}</h2>
     {% if item.image_url %}
-        <img src="{{item.image_url}}" alt="image of {{ item.title }}">
+        <div><img src="{{item.image_url}}" alt="image of {{ item.title }}"></div>
     {% endif %}
-    placeholder for price
+    <div>{{ item.description }}</div>
+    <div>Category: {{ item.category }}</div>
+    <div>Selling User: {{ item.selling_user }}</div>
+    <div>placeholder for price</div>
 
     {% if user.is_authenticated %}
-         <button> Placeholder for bid</button>
-        Placeholder for Add to watchlist
+        <div><button> Placeholder for bid</button></div>
+        <div><button>Placeholder for Add to watchlist</button></div>
     {% endif %}
+
+        <div class="card">
+            <div class="card-header">
+            Comments for {{ item.title }}
+            </div>
+        {% if comments %}
+            {% for comment in comments %}
+            <div class="card-body">
+              <blockquote class="blockquote mb-0">
+                <p>{{ comment.comment }}</p>
+                <footer class="blockquote-footer">{{ comment.post_author }} on {{ comment.post_date }}</footer>
+              </blockquote>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card-body">
+                <blockquote class="blockquote mb-0">
+                <p>Be the first to add a comment!</p>
+                </blockquote>
+            </div>    
+        {% endif %}
+        </div>
+
+        {% if user.is_authenticated %} 
+            <form action="{% url 'item' item.id %}" method="POST">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Add Comment">
+            </form>
+        {% endif %}    
 
 {% endblock %}
