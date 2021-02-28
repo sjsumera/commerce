@@ -2,6 +2,12 @@
 
 {% block body %}
 
+    {% if message %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+      </div>
+    {% endif %}
+
     <h2>{{ item.title }}</h2>
     {% if item.image_url %}
         <div><img src="{{item.image_url}}" alt="image of {{ item.title }}"></div>
@@ -9,10 +15,16 @@
     <div>{{ item.description }}</div>
     <div>Category: {{ item.category }}</div>
     <div>Selling User: {{ item.selling_user }}</div>
-    <div>placeholder for price</div>
+    <div>Current Bid: {{ item.current_bid }} </div>
 
     {% if user.is_authenticated %}
-        <div><button> Placeholder for bid</button></div>
+        <form action="{% url 'item' item.id %}" method="POST">
+            {% csrf_token %}
+            {{ bid_form }}
+            <input type="submit" value="Submit Bid" name="bid-btn">
+        </form>
+
+
         <div><button>Placeholder for Add to watchlist</button></div>
     {% endif %}
 
@@ -41,8 +53,8 @@
         {% if user.is_authenticated %} 
             <form action="{% url 'item' item.id %}" method="POST">
                 {% csrf_token %}
-                {{ form }}
-                <input type="submit" value="Add Comment">
+                {{ comment_form }}
+                <input type="submit" value="Add Comment" name="comment-btn">
             </form>
         {% endif %}    
 

@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Category, Listing, Comment
-from .forms import ListingForm, CommentForm
+from .forms import ListingForm, CommentForm, BidForm
 
 
 def index(request):
@@ -88,20 +88,41 @@ def new_listing(request):
 
 def item(request, item_id):
     """
-    View to display individual items and allow users to add comments. 
+    View to display individual items and allow users to add comments and bid. 
     Citation: https://stackoverflow.com/questions/3090302/how-do-i-get-the-object-if-it-exists-or-none-if-it-does-not-exist
     Queryset citation: https://stackoverflow.com/questions/42080864/set-in-django-for-a-queryset
     """
     item = Listing.objects.get(id=item_id)
     comments = item.comment_set.all()
-    form = CommentForm(request.POST or None)
+    comment_form = CommentForm()
+    bid_form = BidForm()
+    message = ""
 
-    # add comment 
-    if form.is_valid():
-        object = form.save(commit=False)
-        object.post_author = request.user
-        object.listing = item
-        object.save()
-        form = CommentForm()
+    # Add comment
+    if request.POST.get("comment-btn"):
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            object = comment_form.save(commit=False)
+            object.post_author = request.user
+            object.listing = item
+            object.save()
+            comment_form = CommentForm()
 
-    return render(request, "auctions/items.html", {"item": item, "comments": comments, "form": form})
+    # Add bid 
+    if request.POST.get("bid-btn"):
+        bid_form = BidForm(request.POST)
+        if bid_form.is_valid():
+            if float(bid_form['bid'].value()) > item.starting_bid and float(bid_form['bid'].value()) > item.current_bid:
+                object = bid_form.save(commit=False)
+                object.listing = item
+                object.bidding_user = request.user
+                item.bidding_user = object.bidding_user
+                item.current_bid = object.bid
+                item.save()
+                object.save()
+                bid_form = BidForm()
+            else: 
+                message = "Bid must be higher than starting bid and current bid!"    
+            
+    return render(request, "auctions/items.html", {"item": item, "comments": comments, "comment_form": comment_form, "bid_form": bid_form, "message": message})
+

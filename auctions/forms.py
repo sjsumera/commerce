@@ -1,5 +1,5 @@
 from django import forms
-from .models import Listing, Comment
+from .models import Listing, Comment, Bid
 """
 Citing this article on using models as forms. 
 https://www.geeksforgeeks.org/django-modelform-create-form-from-models/
@@ -15,3 +15,8 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['comment']
+
+class BidForm(forms.ModelForm):
+    class Meta:
+        model = Bid
+        fields = ['bid']
